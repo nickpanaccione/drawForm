@@ -1,0 +1,99 @@
+# macOS
+.DS_Store
+._*
+*.dSYM/
+DerivedData/
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+*.xcscheme
+contents.xcworkspacedata
+**/IDEWorkspaceChecks.plist
+
+# Windows
+Thumbs.db
+*.exe
+*.dll
+*.lib
+*.exp
+*.ncb
+*.suo
+*.ilk
+*.pch
+*.pdb
+*.dep
+*.idb
+*.manifest
+*.manifest.res
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+
+# Linux
+*.o
+*.d
+
+# Xcode
+*.mode1v3
+*.pbxuser
+*.perspectivev3
+**/MacOSX/build
+**/iOS/build
+**/Builds/MacOSX/**/Index
+**/Builds/MacOSX/**/Intermediates.noindex
+
+# Visual Studio
+**/VisualStudio[0-9]*/Win32
+**/VisualStudio[0-9]*/x64
+**/VisualStudio[0-9]*/packages
+**/Builds/x64
+**/.vs
+
+# CodeBlocks
+**/CodeBlocks/bin
+**/CodeBlocks/obj
+**/CodeBlocks/*.depend
+**/CodeBlocks/*.layout
+
+# Linux builds
+**/Linux/build
+**/LinuxMakefile/build
+
+# Android
+**/Builds/Android/.gradle
+**/Builds/Android/.idea
+**/Builds/Android/build
+**/Builds/Android/**/*.iml
+**/Builds/Android/local.properties
+**/Builds/Android/app/build
+**/Builds/Android/app/.externalNativeBuild
+**/Builds/Android/app/.cxx
+**/Builds/Android/lib/build
+**/Builds/Android/lib/.externalNativeBuild
+
+# CMake
+**/cmake-build*
+CMakeUserPresets.json
+/build
+
+# IDEs
+.idea/
+.vscode/
+
+# Plugin binaries
+*.vst3
+*.vst
+*.component
+*.aaxplugin
+*.app
+
+# Miscellaneous
+.svn
+.deps
+.dirstamp
+profile
+**/doxygen/doc
+**/doxygen/xml
+.editorconfig
+extras/Projucer/JUCECompileEngine.dylib
