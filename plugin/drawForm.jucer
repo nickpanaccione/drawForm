@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="L0oiQc" name="drawForm" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth">
   <MAINGROUP id="siUiQw" name="drawForm">
-    <GROUP id="{0075F8F9-74DF-06D5-F2AE-10EAFCD13537}" name="Source">
-      <FILE id="MTTMbh" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
-      <FILE id="B94pqV" name="PluginProcessor.h" compile="0" resource="0"
-            file="Source/PluginProcessor.h"/>
-      <FILE id="k5UzYO" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-      <FILE id="YZvpIi" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    <GROUP id="{DFBE2D0B-A1B4-EF50-9237-7C22BD68221A}" name="source">
+      <GROUP id="{62830F29-33F1-9FC2-E166-73920ADD38A2}" name="core">
+        <FILE id="gGGY3u" name="PluginEditor.cpp" compile="1" resource="0"
+              file="../source/core/PluginEditor.cpp"/>
+        <FILE id="l20Lgd" name="PluginEditor.h" compile="0" resource="0" file="../source/core/PluginEditor.h"/>
+        <FILE id="AThhQU" name="PluginProcessor.cpp" compile="1" resource="0"
+              file="../source/core/PluginProcessor.cpp"/>
+        <FILE id="UTMiNG" name="PluginProcessor.h" compile="0" resource="0"
+              file="../source/core/PluginProcessor.h"/>
+      </GROUP>
+      <GROUP id="{7D3D02F3-3173-59F2-64D9-38D63B884357}" name="dsp"/>
+      <GROUP id="{A1D87833-C8C6-A073-ADCF-10D351D91D73}" name="ui"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>
@@ -20,6 +24,8 @@
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
             useGlobalPath="1"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors_headless" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -50,6 +56,7 @@
         <MODULEPATH id="juce_graphics" path="../../../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../../../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
