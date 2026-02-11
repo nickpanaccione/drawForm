@@ -36,29 +36,17 @@ const juce::String DrawFormAudioProcessor::getName() const
 
 bool DrawFormAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
     return true;
-   #else
-    return false;
-   #endif
 }
 
 bool DrawFormAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
     return false;
-   #endif
 }
 
 bool DrawFormAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
-    return true;
-   #else
     return false;
-   #endif
 }
 
 double DrawFormAudioProcessor::getTailLengthSeconds() const
@@ -93,8 +81,7 @@ void DrawFormAudioProcessor::changeProgramName (int index, const juce::String& n
 //==============================================================================
 void DrawFormAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    synthEngine.setSampleRate(sampleRate);
 }
 
 void DrawFormAudioProcessor::releaseResources()
@@ -131,30 +118,22 @@ bool DrawFormAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 
 void DrawFormAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    buffer.clear();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    for (const auto metadata : midiMessages)
     {
-        auto* channelData = buffer.getWritePointer (channel);
+        auto message = metadata.getMessage();
+        if (message.isNoteOn())
+            synthEngine.noteOn(message.getNoteNumber(), message.getFloatVelocity());
+        else if (message.isNoteOff())
+            synthEngine.noteOff(message.getNoteNumber());
+    }
 
-        // ..do something to the data...
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+    {
+        float output = synthEngine.process();
+        for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
+            buffer.setSample(channel, sample, output);
     }
 }
 

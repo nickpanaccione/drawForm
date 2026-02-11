@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="L0oiQc" name="drawForm" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              pluginChannelConfigs="{0, 2}">
   <MAINGROUP id="siUiQw" name="drawForm">
     <GROUP id="{DFBE2D0B-A1B4-EF50-9237-7C22BD68221A}" name="source">
       <GROUP id="{62830F29-33F1-9FC2-E166-73920ADD38A2}" name="core">
