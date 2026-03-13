@@ -14,7 +14,9 @@
         <FILE id="UTMiNG" name="PluginProcessor.h" compile="0" resource="0"
               file="../source/core/PluginProcessor.h"/>
       </GROUP>
-      <GROUP id="{7D3D02F3-3173-59F2-64D9-38D63B884357}" name="dsp"/>
+      <GROUP id="{7D3D02F3-3173-59F2-64D9-38D63B884357}" name="dsp">
+        <FILE id="OWLhRw" name="Envelope.h" compile="0" resource="0" file="../source/dsp/Envelope.h"/>
+      </GROUP>
       <GROUP id="{A1D87833-C8C6-A073-ADCF-10D351D91D73}" name="ui">
         <FILE id="E2rme3" name="WavetableEditor.h" compile="0" resource="0"
               file="../source/ui/WavetableEditor.h"/>
