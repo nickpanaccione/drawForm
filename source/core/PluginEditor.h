@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "../ui/WavetableEditor.h"
 
 class DrawFormAudioProcessorEditor  : public juce::AudioProcessorEditor {
 public:
@@ -13,5 +14,7 @@ public:
 
 private:
   DrawFormAudioProcessor& audioProcessor;
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DrawFormAudioProcessorEditor)
+  WavetableEditor wavetableEditor;
+
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DrawFormAudioProcessorEditor)
 };

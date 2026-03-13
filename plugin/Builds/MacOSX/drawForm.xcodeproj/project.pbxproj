@@ -129,6 +129,7 @@
 		AE8EFBFB3A2FDD63A636AB0D /* include_juce_core.mm */ /* include_juce_core.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_core.mm; path = ../../JuceLibraryCode/include_juce_core.mm; sourceTree = SOURCE_ROOT; };
 		B079C86ACDB28EF8DBAFAF4C /* Standalone Plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = drawForm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6A8DDF34EE75537B4A7B8B3 /* include_juce_audio_utils.mm */ /* include_juce_audio_utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_utils.mm; path = ../../JuceLibraryCode/include_juce_audio_utils.mm; sourceTree = SOURCE_ROOT; };
+		B7DDBF66EE176817B7ED0E05 /* WavetableEditor.h */ /* WavetableEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WavetableEditor.h; path = ../../../source/ui/WavetableEditor.h; sourceTree = SOURCE_ROOT; };
 		B979D6A27AC4319BCB3BC615 /* include_juce_audio_processors_headless_ara.cpp */ /* include_juce_audio_processors_headless_ara.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_audio_processors_headless_ara.cpp; path = ../../JuceLibraryCode/include_juce_audio_processors_headless_ara.cpp; sourceTree = SOURCE_ROOT; };
 		BCAEC8F13AFE6A1FAA47611A /* PluginProcessor.cpp */ /* PluginProcessor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PluginProcessor.cpp; path = ../../../source/core/PluginProcessor.cpp; sourceTree = SOURCE_ROOT; };
 		BF251F69B638355638168FDA /* PluginEditor.cpp */ /* PluginEditor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PluginEditor.cpp; path = ../../../source/core/PluginEditor.cpp; sourceTree = SOURCE_ROOT; };
@@ -293,6 +294,7 @@
 			isa = PBXGroup;
 			children = (
 				93BDC86A3722E2BF4992BF57,
+				B2D2DE690D6DCDD927B9A86C,
 			);
 			name = source;
 			sourceTree = "<group>";
@@ -306,6 +308,14 @@
 				228B8ABB36B84E48860218C4,
 			);
 			name = core;
+			sourceTree = "<group>";
+		};
+		B2D2DE690D6DCDD927B9A86C /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				B7DDBF66EE176817B7ED0E05,
+			);
+			name = ui;
 			sourceTree = "<group>";
 		};
 		B8423ACF091F9EDBA1AA6DC6 /* JUCE Library Code */ = {
