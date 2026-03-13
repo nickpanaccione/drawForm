@@ -15,12 +15,12 @@ public:
 
   void setSampleRate(double sampleRate) {
     for (auto& voice : voices) {
-    voice.setSampleRate(sampleRate);
+      voice.setSampleRate(sampleRate);
     }
   }
 
   void noteOn(int note, float velocity) {
-  // find free voice 
+    // find free voice 
     for (auto& voice : voices) {
       if (!voice.isPlaying()) {
         voice.noteOn(note, velocity);
