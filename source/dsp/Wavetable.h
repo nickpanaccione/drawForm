@@ -6,56 +6,62 @@
 
 class Wavetable {
 public:
-  static constexpr int kTableSize = 2048;
+  static constexpr int kTableSize = WavetableFrame::kTableSize;
+  static constexpr int kDefaultNumFrames = 4;
 
-  Wavetable() {
-    fillSine();
+  Wavetable(int numFrames = kDefaultNumFrames) {
+    frames.resize(numFrames);
+    initializeDefaultFrames();
   }
 
-  void fillSine() {
-    for (int i = 0; i < kTableSize; ++i) {
-      float phase = static_cast<float>(i) / static_cast<float>(kTableSize);
-      table[i] = std::sin(2.0f * juce::MathConstants<float>::pi * phase);
+  void initializeDefaultFrames() {
+    if (frames.size() >= 1) { frames[0].fillSine(); }
+    if (frames.size() >= 2) { frames[1].fillTriangle(); }
+    if (frames.size() >= 3) { frames[2].fillSaw(); }
+    if (frames.size() >= 4) { frames[3].fillSquare(); }
+  }
+
+  int getNumFrames() const { return static_cast<int>(frames.size()); }
+
+  WavetableFrame& getFrame(int index) {
+    return frames[juce::jlimit(0, static_cast<int>(frames.size()) - 1, index)];
+  }
+
+  const WavetableFrame& getFrame(int index) const {
+    return frames[juce::jlimit(0, static_cast<int>(frames.size()) - 1, index)];
+  }
+
+  void setSample(int frameIndex, int sampleIndex, float value) {
+    if (frameIndex >= 0 && frameIndex < static_cast<int>(frames.size())) {
+      frames[frameIndex].setSample(sampleIndex, value);
     }
   }
 
-  void fillSaw() {
-    for (int i = 0; i < kTableSize; ++i) {
-      float phase = static_cast<float>(i) / static_cast<float>(kTableSize);
-      table[i] = 2.0f * phase - 1.0f;
-    }
+  float getInterpolatedSample(float tableIndex, float framePosition) const {
+    int numFrames = static_cast<int>(frames.size());
+    float scaledPosition = framePosition * (numFrames - 1);
+
+    int frame0 = static_cast<int>(scaledPosition);
+    int frame1 = frame0 + 1;
+
+    frame0 = juce::jlimit(0, numFrames - 1, frame0);
+    frame1 = juce::jlimit(0, numFrames - 1, frame1);
+
+    float frameFrac = scaledPosition - static_cast<float>(static_cast<int>(scaledPosition));
+
+    float sample0 = frames[frame0].getInterpolatedSample(tableIndex);
+    float sample1 = frames[frame1].getInterpolatedSample(tableIndex);
+
+    return sample0 + frameFrac * (sample1 - sample0);
   }
 
-  void fillSquare() {
-    for (int i = 0; i < kTableSize; ++i) {
-      table[i] = (i < kTableSize / 2) ? 1.0f : -1.0f;
-    }
-  }
-
-  void setSample(int index, float value) {
-    if (index >= 0 && index < kTableSize) {
-      table[index] = juce::jlimit(-1.0f, 1.0f, value);
-    }
-  }
-
-  float getSample(int index) const {
-    return table[index & (kTableSize - 1)];
-  }
-
-  float getInterpolatedSample(float index) const {
-    int i0 = static_cast<int>(index);
-    int i1 = i0 + 1;
-    float frac = index - static_cast<float>(i0);
-
-    float s0 = getSample(i0);
-    float s1 = getSample(i1);
-
-    return s0 + frac * (s1 - s0); 
-  }
-
-  const std::array<float, kTableSize>& getTable() const { return table; }
-  std::array<float, kTableSize>& getTable() { return table; }
+  // legacy compatibility
+  void setSample(int index, float value) { setSample(0, index, value); }
+  float getSample(int index) const { return frames[0].getSample(index); }
+  float getInterpolatedSample(float index) const { return frames[0].getInterpolatedSample(index); }
+  const std::array<float, kTableSize>& getTable() const { return frames[0].getTable(); }
+  std::array<float, kTableSize>& getTable() { return frames[0].getTable(); }
 
 private:
-  std::array<float, kTableSize> table{};
+  std::vector<WavetableFrame> frames;
 };

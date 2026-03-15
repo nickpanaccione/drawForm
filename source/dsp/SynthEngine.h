@@ -64,6 +64,13 @@ public:
 
   Wavetable& getWavetable() { return wavetable; }
 
+
+  void setFramePosition(float position) {
+    for (auto& voice : voices) {
+      voice.setFramePosition(position);
+    }
+  }
+
 private:
   Wavetable wavetable;
   std::array<SynthVoice, kMaxVoices> voices;

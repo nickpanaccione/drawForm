@@ -18,6 +18,10 @@ public:
     envelope.setParameters(attack, decay, sustain, release);
   }
 
+  void setFramePosition(float position) {
+    oscillator.setFramePosition(position);
+  }
+
   void noteOn(int note, float velocity) {
     currentNote = note;
     velocityGain = velocity;
@@ -31,7 +35,7 @@ public:
     }
   }
 
-  bool isPlaying() const { return oscillator.isPlaying(); }
+  bool isPlaying() const { return envelope.isActive(); }
   int getCurrentNote() const { return currentNote; }
 
   float process() {
