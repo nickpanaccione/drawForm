@@ -22,6 +22,10 @@ public:
     framePosition = juce::jlimit(0.0f, 1.0f, position);
   }
 
+  void setDriftAmount(float amount) {
+    driftAmount = juce::jlimit(0.0f, 1.0f, amount);
+  }
+
   void noteOn(int midiNote, float velocity) {
     frequency = 440.0f * std::pow(2.0f, (midiNote - 69) / 12.0f);
     gain = velocity;
@@ -37,13 +41,23 @@ public:
 
   float process() {
     if (!playing || wavetable == nullptr) {
-      return 0.0f;
+        return 0.0f;
     }
 
     float tableIndex = phase * static_cast<float>(Wavetable::kTableSize);
     float sample = wavetable->getInterpolatedSample(tableIndex, framePosition);
 
-    phase += phaseIncrement;
+    // update drift LFO
+    driftPhase += driftSpeed / static_cast<float>(sampleRate);
+    if (driftPhase >= 1.0f) {
+      driftPhase -= 1.0f;
+    }
+
+    // drift offset
+    float driftLFO = std::sin(2.0f * juce::MathConstants<float>::pi * driftPhase);
+    float driftOffset = driftLFO * driftAmount * 0.01f; // Max ~1% pitch drift
+
+    phase += phaseIncrement * (1.0f + driftOffset);
     if (phase >= 1.0f) {
       phase -= 1.0f;
     }
@@ -53,6 +67,7 @@ public:
 
   void reset() {
     phase = 0.0f;
+    driftPhase = random.nextFloat(); // randomize phase per voice
     playing = false;
   }
 
@@ -71,4 +86,11 @@ private:
   float gain = 1.0f;
   float framePosition = 0.0f;
   bool playing = false;
+
+  // Drift parameters
+  float driftAmount = 0.0f;
+  float driftPhase = 0.0f;
+  float driftSpeed = 0.3f; 
+
+  juce::Random random;
 };

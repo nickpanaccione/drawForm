@@ -25,6 +25,7 @@ DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcesso
   setupSlider(sustainSlider, sustainLabel, "Sustain", 0.0, 1.0, 0.7);
   setupSlider(releaseSlider, releaseLabel, "Release", 0.001, 3.0, 0.3);
   setupSlider(morphSlider, morphLabel, "Morph", 0.0, 1.0, 0.0);
+  setupSlider(driftSlider, driftLabel, "Drift", 0.0, 1.0, 0.0);
 
     frameLabel.setText("Frame", juce::dontSendNotification);
     frameLabel.setJustificationType(juce::Justification::centred);
@@ -64,7 +65,7 @@ void DrawFormAudioProcessorEditor::resized() {
 
   bounds.removeFromTop(20);
 
-  auto sliderWidth = bounds.getWidth() / 5;
+  auto sliderWidth = bounds.getWidth() / 6;
   auto sliderArea = bounds;
 
   auto setupArea = [&](juce::Slider& slider, juce::Label& label) {
@@ -78,11 +79,14 @@ void DrawFormAudioProcessorEditor::resized() {
   setupArea(sustainSlider, sustainLabel);
   setupArea(releaseSlider, releaseLabel);
   setupArea(morphSlider, morphLabel);
+  setupArea(driftSlider, driftLabel);
 }
 
 void DrawFormAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
   if (slider == &morphSlider) {
     audioProcessor.getSynthEngine().setFramePosition(static_cast<float>(morphSlider.getValue()));
+  } else if (slider == &driftSlider) {
+    audioProcessor.getSynthEngine().setDriftAmount(static_cast<float>(driftSlider.getValue()));
   } else {
     updateEnvelope();
   }

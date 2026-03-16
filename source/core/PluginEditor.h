@@ -35,5 +35,8 @@ private:
   juce::ComboBox frameSelector;
   juce::Label frameLabel;
 
+  juce::Slider driftSlider;
+  juce::Label driftLabel;
+
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DrawFormAudioProcessorEditor)
 };

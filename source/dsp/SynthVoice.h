@@ -38,6 +38,10 @@ public:
   bool isPlaying() const { return envelope.isActive(); }
   int getCurrentNote() const { return currentNote; }
 
+  void setDriftAmount(float amount) {
+    oscillator.setDriftAmount(amount);
+  }
+
   float process() {
     if (!envelope.isActive()) {
       if (oscillator.isPlaying()) {

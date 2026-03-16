@@ -71,6 +71,12 @@ public:
     }
   }
 
+  void setDriftAmount(float amount) {
+    for (auto& voice : voices) {
+      voice.setDriftAmount(amount);
+    }
+  }
+  
 private:
   Wavetable wavetable;
   std::array<SynthVoice, kMaxVoices> voices;
