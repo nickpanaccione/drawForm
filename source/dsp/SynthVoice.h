@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WavetableOscillator.h"
+#include "NoiseOscillator.h"
 #include "Envelope.h"
 
 class SynthVoice {
@@ -22,6 +23,18 @@ public:
     oscillator.setFramePosition(position);
   }
 
+  void setDriftAmount(float amount) {
+    oscillator.setDriftAmount(amount);
+  }
+
+  void setNoiseLevel(float level) {
+    noiseOsc.setLevel(level);
+  }
+
+  void setNoiseType(NoiseOscillator::NoiseType type) {
+    noiseOsc.setNoiseType(type);
+  }
+
   void noteOn(int note, float velocity) {
     currentNote = note;
     velocityGain = velocity;
@@ -38,9 +51,6 @@ public:
   bool isPlaying() const { return envelope.isActive(); }
   int getCurrentNote() const { return currentNote; }
 
-  void setDriftAmount(float amount) {
-    oscillator.setDriftAmount(amount);
-  }
 
   float process() {
     if (!envelope.isActive()) {
@@ -53,11 +63,14 @@ public:
 
     float envLevel = envelope.process();
     float sample = oscillator.process();
-    return sample * envLevel * velocityGain;
+    float noiseSample = noiseOsc.process();
+
+    return (oscSample + noiseSample) * envLevel * velocityGain;
   }
 
 private:
   WavetableOscillator oscillator;
+  NoiseOscillator noiseOsc;
   Envelope envelope;
   int currentNote = -1;
   float velocityGain = 1.0f;

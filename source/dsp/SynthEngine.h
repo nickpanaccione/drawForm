@@ -76,7 +76,18 @@ public:
       voice.setDriftAmount(amount);
     }
   }
-  
+
+  void setNoiseLevel(float level) {
+    for (auto& voice : voices) {
+      voice.setNoiseLevel(level);
+    }
+  }
+
+  void setNoiseType(NoiseOscillator::NoiseType type) {
+    for (auto& voice : voices) {
+      voice.setNoiseType(type);
+    }
+  }
 private:
   Wavetable wavetable;
   std::array<SynthVoice, kMaxVoices> voices;

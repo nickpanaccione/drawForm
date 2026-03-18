@@ -25,18 +25,23 @@ private:
   juce::Slider sustainSlider;
   juce::Slider releaseSlider;
   juce::Slider morphSlider;
+  juce::Slider noiseSlider;
 
   juce::Label attackLabel;
   juce::Label decayLabel;
   juce::Label sustainLabel;
   juce::Label releaseLabel;
   juce::Label morphLabel;
+  juce::Label noiseLabel;
 
   juce::ComboBox frameSelector;
   juce::Label frameLabel;
 
   juce::Slider driftSlider;
   juce::Label driftLabel;
+
+  juce::ComboBox noiseTypeSelector;
+  juce::Label noiseTypeLabel;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DrawFormAudioProcessorEditor)
 };

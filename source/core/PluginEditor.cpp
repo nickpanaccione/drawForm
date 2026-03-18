@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "../dsp/NoiseOscillator.h"
 
 DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcessor& p)
   : AudioProcessorEditor(&p),
@@ -26,22 +27,33 @@ DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcesso
   setupSlider(releaseSlider, releaseLabel, "Release", 0.001, 3.0, 0.3);
   setupSlider(morphSlider, morphLabel, "Morph", 0.0, 1.0, 0.0);
   setupSlider(driftSlider, driftLabel, "Drift", 0.0, 1.0, 0.0);
+  setupSlider(noiseSlider, noiseLabel, "Noise", 0.0, 1.0, 0.0);
 
-    frameLabel.setText("Frame", juce::dontSendNotification);
-    frameLabel.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(frameLabel);
+  noiseTypeLabel.setText("Noise Type", juce::dontSendNotification);
+  noiseTypeLabel.setJustificationType(juce::Justification::centred);
+  addAndMakeVisible(noiseTypeLabel);
 
-    int numFrames = p.getSynthEngine().getWavetable().getNumFrames();
-    for (int i = 0; i < numFrames; ++i) {
-      frameSelector.addItem("Frame " + juce::String(i + 1), i + 1);
-    }
-    frameSelector.setSelectedId(1);
-    frameSelector.addListener(this);
-    addAndMakeVisible(frameSelector);
+  noiseTypeSelector.addItem("White", 1);
+  noiseTypeSelector.addItem("Pink", 2);
+  noiseTypeSelector.addItem("Brown", 3);
+  noiseTypeSelector.setSelectedId(1);
+  noiseTypeSelector.addListener(this);
+  addAndMakeVisible(noiseTypeSelector);
+  frameLabel.setText("Frame", juce::dontSendNotification);
+  frameLabel.setJustificationType(juce::Justification::centred);
+  addAndMakeVisible(frameLabel);
 
-    updateEnvelope();
+  int numFrames = p.getSynthEngine().getWavetable().getNumFrames();
+  for (int i = 0; i < numFrames; ++i) {
+    frameSelector.addItem("Frame " + juce::String(i + 1), i + 1);
+  }
+  frameSelector.setSelectedId(1);
+  frameSelector.addListener(this);
+  addAndMakeVisible(frameSelector);
 
-    setSize(700, 450);
+  updateEnvelope();
+
+  setSize(800, 500);
 }
 
 DrawFormAudioProcessorEditor::~DrawFormAudioProcessorEditor() {
@@ -58,6 +70,10 @@ void DrawFormAudioProcessorEditor::resized() {
   frameLabel.setBounds(topArea.removeFromLeft(50));
   frameSelector.setBounds(topArea.removeFromLeft(120));
 
+  topArea.removeFromLeft(20);
+  noiseTypeLabel.setBounds(topArea.removeFromLeft(70));
+  noiseTypeSelector.setBounds(topArea.removeFromLeft(100));
+
   bounds.removeFromTop(10);
 
   auto waveformArea = bounds.removeFromTop(200);
@@ -65,7 +81,7 @@ void DrawFormAudioProcessorEditor::resized() {
 
   bounds.removeFromTop(20);
 
-  auto sliderWidth = bounds.getWidth() / 6;
+  auto sliderWidth = bounds.getWidth() / 7;
   auto sliderArea = bounds;
 
   auto setupArea = [&](juce::Slider& slider, juce::Label& label) {
@@ -80,6 +96,7 @@ void DrawFormAudioProcessorEditor::resized() {
   setupArea(releaseSlider, releaseLabel);
   setupArea(morphSlider, morphLabel);
   setupArea(driftSlider, driftLabel);
+  setupArea(noiseSlider, noiseLabel);
 }
 
 void DrawFormAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
@@ -87,6 +104,8 @@ void DrawFormAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
     audioProcessor.getSynthEngine().setFramePosition(static_cast<float>(morphSlider.getValue()));
   } else if (slider == &driftSlider) {
     audioProcessor.getSynthEngine().setDriftAmount(static_cast<float>(driftSlider.getValue()));
+  } else if (slider == &noiseSlider) {
+    audioProcessor.getSynthEngine().setNoiseLevel(static_cast<float>(noiseSlider.getValue()));
   } else {
     updateEnvelope();
   }
@@ -95,6 +114,9 @@ void DrawFormAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
 void DrawFormAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBox) {
   if (comboBox == &frameSelector) {
     wavetableEditor.setCurrentFrame(frameSelector.getSelectedId() - 1);
+  } else if (comboBox == &noiseTypeSelector) {
+    auto type = static_cast<NoiseOscillator::NoiseType>(noiseTypeSelector.getSelectedId() - 1);
+    audioProcessor.getSynthEngine().setNoiseType(type);
   }
 }
 
