@@ -88,7 +88,28 @@ public:
       voice.setNoiseType(type);
     }
   }
+  void setPitchBend(float normalizedValue) {
+    float semitones = normalizedValue * pitchBendRange;
+    for (auto& voice : voices) {
+      voice.setPitchBend(semitones);
+    }
+  }
+
+  void setPitchBendRange(float semitones) {
+    pitchBendRange = semitones;
+    for (auto& voice : voices) {
+      voice.setPitchBendRange(semitones);
+    }
+  }
+
+  void setDetune(float cents) {
+    for (auto& voice : voices) {
+      voice.setDetune(cents);
+    }
+  }
+
 private:
   Wavetable wavetable;
   std::array<SynthVoice, kMaxVoices> voices;
+  float pitchBendRange = 2.0f;
 };

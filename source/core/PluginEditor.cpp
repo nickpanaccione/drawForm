@@ -3,9 +3,9 @@
 #include "../dsp/NoiseOscillator.h"
 
 DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcessor& p)
-  : AudioProcessorEditor(&p),
-    audioProcessor(p),
-    wavetableEditor(p.getSynthEngine().getWavetable()) {
+    : AudioProcessorEditor(&p),
+      audioProcessor(p),
+      wavetableEditor(p.getSynthEngine().getWavetable()) {
   addAndMakeVisible(wavetableEditor);
 
   auto setupSlider = [this](juce::Slider& slider, juce::Label& label, const juce::String& name, double min, double max, double initial) {
@@ -28,6 +28,11 @@ DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcesso
   setupSlider(morphSlider, morphLabel, "Morph", 0.0, 1.0, 0.0);
   setupSlider(driftSlider, driftLabel, "Drift", 0.0, 1.0, 0.0);
   setupSlider(noiseSlider, noiseLabel, "Noise", 0.0, 1.0, 0.0);
+  setupSlider(detuneSlider, detuneLabel, "Detune", -100.0, 100.0, 0.0);
+  setupSlider(pitchBendRangeSlider, pitchBendRangeLabel, "PB Range", 1.0, 24.0, 2.0);
+
+  detuneSlider.setTextValueSuffix(" ct");
+  pitchBendRangeSlider.setTextValueSuffix(" st");
 
   noiseTypeLabel.setText("Noise Type", juce::dontSendNotification);
   noiseTypeLabel.setJustificationType(juce::Justification::centred);
@@ -39,6 +44,7 @@ DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcesso
   noiseTypeSelector.setSelectedId(1);
   noiseTypeSelector.addListener(this);
   addAndMakeVisible(noiseTypeSelector);
+
   frameLabel.setText("Frame", juce::dontSendNotification);
   frameLabel.setJustificationType(juce::Justification::centred);
   addAndMakeVisible(frameLabel);
@@ -53,7 +59,7 @@ DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcesso
 
   updateEnvelope();
 
-  setSize(800, 500);
+  setSize(900, 500);
 }
 
 DrawFormAudioProcessorEditor::~DrawFormAudioProcessorEditor() {
@@ -81,7 +87,7 @@ void DrawFormAudioProcessorEditor::resized() {
 
   bounds.removeFromTop(20);
 
-  auto sliderWidth = bounds.getWidth() / 7;
+  auto sliderWidth = bounds.getWidth() / 9;
   auto sliderArea = bounds;
 
   auto setupArea = [&](juce::Slider& slider, juce::Label& label) {
@@ -97,6 +103,8 @@ void DrawFormAudioProcessorEditor::resized() {
   setupArea(morphSlider, morphLabel);
   setupArea(driftSlider, driftLabel);
   setupArea(noiseSlider, noiseLabel);
+  setupArea(detuneSlider, detuneLabel);
+  setupArea(pitchBendRangeSlider, pitchBendRangeLabel);
 }
 
 void DrawFormAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
@@ -106,6 +114,10 @@ void DrawFormAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
     audioProcessor.getSynthEngine().setDriftAmount(static_cast<float>(driftSlider.getValue()));
   } else if (slider == &noiseSlider) {
     audioProcessor.getSynthEngine().setNoiseLevel(static_cast<float>(noiseSlider.getValue()));
+  } else if (slider == &detuneSlider) {
+    audioProcessor.getSynthEngine().setDetune(static_cast<float>(detuneSlider.getValue()));
+  } else if (slider == &pitchBendRangeSlider) {
+    audioProcessor.getSynthEngine().setPitchBendRange(static_cast<float>(pitchBendRangeSlider.getValue()));
   } else {
     updateEnvelope();
   }
@@ -122,9 +134,9 @@ void DrawFormAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBox) {
 
 void DrawFormAudioProcessorEditor::updateEnvelope() {
   audioProcessor.getSynthEngine().setEnvelopeParameters(
-  static_cast<float>(attackSlider.getValue()),
-  static_cast<float>(decaySlider.getValue()),
-  static_cast<float>(sustainSlider.getValue()),
-  static_cast<float>(releaseSlider.getValue())
+    static_cast<float>(attackSlider.getValue()),
+    static_cast<float>(decaySlider.getValue()),
+    static_cast<float>(sustainSlider.getValue()),
+    static_cast<float>(releaseSlider.getValue())
   );
 }

@@ -26,8 +26,22 @@ public:
     driftAmount = juce::jlimit(0.0f, 1.0f, amount);
   }
 
+  void setPitchBend(float semitones) {
+    pitchBendSemitones = semitones;
+    updatePhaseIncrement();
+  }
+
+  void setPitchBendRange(float semitones) {
+    pitchBendRange = semitones;
+  }
+
+  void setDetune(float cents) {
+    detuneCents = cents;
+    updatePhaseIncrement();
+  }
+
   void noteOn(int midiNote, float velocity) {
-    frequency = 440.0f * std::pow(2.0f, (midiNote - 69) / 12.0f);
+    baseFrequency = 440.0f * std::pow(2.0f, (midiNote - 69) / 12.0f);
     gain = velocity;
     playing = true;
     updatePhaseIncrement();
@@ -74,12 +88,15 @@ public:
 private:
   void updatePhaseIncrement() {
     if (sampleRate > 0.0) {
+      float pitchOffset = pitchBendSemitones + (detuneCents / 100.0f);
+      frequency = baseFrequency * std::pow(2.0f, pitchOffset / 12.0f);
       phaseIncrement = frequency / static_cast<float>(sampleRate);
     }
   }
 
   Wavetable* wavetable = nullptr;
   double sampleRate = 44100.0;
+  float baseFrequency = 440.0f;
   float frequency = 440.0f;
   float phase = 0.0f;
   float phaseIncrement = 0.0f;
@@ -87,7 +104,12 @@ private:
   float framePosition = 0.0f;
   bool playing = false;
 
-  // Drift parameters
+  // pitch bend and detune
+  float pitchBendSemitones = 0.0f;
+  float pitchBendRange = 2.0f;
+  float detuneCents = 0.0f;
+
+  // drift parameters
   float driftAmount = 0.0f;
   float driftPhase = 0.0f;
   float driftSpeed = 0.3f; 

@@ -43,5 +43,11 @@ private:
   juce::ComboBox noiseTypeSelector;
   juce::Label noiseTypeLabel;
 
+  juce::Slider detuneSlider;
+  juce::Label detuneLabel;
+
+  juce::Slider pitchBendRangeSlider;
+  juce::Label pitchBendRangeLabel;
+
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DrawFormAudioProcessorEditor)
 };

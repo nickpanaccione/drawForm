@@ -35,6 +35,18 @@ public:
     noiseOsc.setNoiseType(type);
   }
 
+  void setPitchBend(float semitones) {
+    oscillator.setPitchBend(semitones);
+  }
+
+  void setPitchBendRange(float semitones) {
+    oscillator.setPitchBendRange(semitones);
+  }
+
+  void setDetune(float cents) {
+    oscillator.setDetune(cents);
+  }
+
   void noteOn(int note, float velocity) {
     currentNote = note;
     velocityGain = velocity;

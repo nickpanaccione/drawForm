@@ -85,7 +85,7 @@ bool DrawFormAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 }
 #endif
 
-void DrawFormAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
+void DrawFormAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
   buffer.clear();
 
   for (const auto metadata : midiMessages) {
@@ -94,12 +94,15 @@ void DrawFormAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
       synthEngine.noteOn(message.getNoteNumber(), message.getFloatVelocity());
     } else if (message.isNoteOff()) {
       synthEngine.noteOff(message.getNoteNumber());
+    } else if (message.isPitchWheel()) {
+      float normalized = (message.getPitchWheelValue() - 8192) / 8192.0f;
+      synthEngine.setPitchBend(normalized);
     }
   }
 
   for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
     float output = synthEngine.process();
-    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) { 
       buffer.setSample(channel, sample, output);
     }
   }
