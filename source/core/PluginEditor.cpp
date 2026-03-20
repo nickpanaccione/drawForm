@@ -109,7 +109,9 @@ void DrawFormAudioProcessorEditor::resized() {
 
 void DrawFormAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
   if (slider == &morphSlider) {
-    audioProcessor.getSynthEngine().setFramePosition(static_cast<float>(morphSlider.getValue()));
+    float morphValue = static_cast<float>(morphSlider.getValue());
+    audioProcessor.getSynthEngine().setFramePosition(morphValue);
+    wavetableEditor.setMorphPosition(morphValue);
   } else if (slider == &driftSlider) {
     audioProcessor.getSynthEngine().setDriftAmount(static_cast<float>(driftSlider.getValue()));
   } else if (slider == &noiseSlider) {

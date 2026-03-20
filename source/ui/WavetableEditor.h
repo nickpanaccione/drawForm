@@ -16,6 +16,11 @@ public:
 
   int getCurrentFrame() const { return currentFrame; }
 
+  void setMorphPosition(float position) {
+    morphPosition = juce::jlimit(0.0f, 1.0f, position);
+    repaint();
+  }
+
   void paint(juce::Graphics& g) override {
     auto bounds = getLocalBounds().toFloat();
 
@@ -31,13 +36,20 @@ public:
         continue;
       }
 
-      g.setColour(juce::Colours::grey.withAlpha(0.3f));
+      g.setColour(juce::Colours::grey.withAlpha(0.2f));
       drawFrame(g, bounds, f);
     }
 
-    // raw current frame 
-    g.setColour(juce::Colours::cyan);
+    // draw current editable frame
+    g.setColour(juce::Colours::grey.withAlpha(0.5f));
     drawFrame(g, bounds, currentFrame);
+
+    // draw morphed waveform 
+    g.setColour(juce::Colours::cyan);
+    drawMorphedWaveform(g, bounds);
+
+    // draw morph position indicator
+    drawMorphIndicator(g, bounds);
   }
 
   void mouseDown(const juce::MouseEvent& event) override {
@@ -67,6 +79,47 @@ private:
     }
 
     g.strokePath(wavePath, juce::PathStrokeType(frameIndex == currentFrame ? 2.0f : 1.0f));
+  }
+
+  void drawMorphedWaveform(juce::Graphics& g, juce::Rectangle<float> bounds) {
+    juce::Path wavePath;
+    constexpr int step = 4;
+    for (int i = 0; i < Wavetable::kTableSize; i += step) {
+      float x = (static_cast<float>(i) / static_cast<float>(Wavetable::kTableSize - 1)) * bounds.getWidth();
+      float sample = wavetable.getInterpolatedSample(static_cast<float>(i), morphPosition);
+      float y = bounds.getCentreY() - (sample * bounds.getHeight() * 0.45f);
+
+      if (i == 0) {
+        wavePath.startNewSubPath(x, y);
+      } else {
+        wavePath.lineTo(x, y);
+      }
+    }
+
+    g.strokePath(wavePath, juce::PathStrokeType(2.5f));
+  }
+
+  void drawMorphIndicator(juce::Graphics& g, juce::Rectangle<float> bounds) {
+    int numFrames = wavetable.getNumFrames();
+    float indicatorWidth = bounds.getWidth();
+    float indicatorHeight = 8.0f;
+    float indicatorY = bounds.getBottom() - indicatorHeight - 5.0f;
+
+    // draw frame markers
+    g.setColour(juce::Colours::grey);
+    for (int i = 0; i < numFrames; ++i) {
+      float x = (static_cast<float>(i) / static_cast<float>(numFrames - 1)) * indicatorWidth;
+      g.fillEllipse(x - 3.0f, indicatorY, 6.0f, 6.0f);
+    }
+
+    // draw current morph position
+    g.setColour(juce::Colours::cyan);
+    float morphX = morphPosition * indicatorWidth;
+    g.fillEllipse(morphX - 5.0f, indicatorY - 1.0f, 10.0f, 10.0f);
+
+    // draw line connecting frames
+    g.setColour(juce::Colours::grey.withAlpha(0.5f));
+    g.drawLine(0.0f, indicatorY + 3.0f, indicatorWidth, indicatorY + 3.0f, 2.0f);
   }
 
   void drawLine(juce::Point<float> from, juce::Point<float> to) {
@@ -119,6 +172,7 @@ private:
   Wavetable& wavetable;
   juce::Point<float> lastPosition;
   int currentFrame = 0;
+  float morphPosition = 0.0f;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(WavetableEditor)
 };
