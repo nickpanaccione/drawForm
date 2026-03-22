@@ -8,7 +8,8 @@ DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcesso
       wavetableEditor(p.getSynthEngine().getWavetable()) {
   addAndMakeVisible(wavetableEditor);
 
-  auto setupSlider = [this](juce::Slider& slider, juce::Label& label, const juce::String& name, double min, double max, double initial) {
+  auto setupSlider = [this](juce::Slider& slider, juce::Label& label, const juce::String& name,
+                             double min, double max, double initial) {
     slider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
     slider.setRange(min, max, 0.001);
@@ -30,9 +31,11 @@ DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcesso
   setupSlider(noiseSlider, noiseLabel, "Noise", 0.0, 1.0, 0.0);
   setupSlider(detuneSlider, detuneLabel, "Detune", -100.0, 100.0, 0.0);
   setupSlider(pitchBendRangeSlider, pitchBendRangeLabel, "PB Range", 1.0, 24.0, 2.0);
+  setupSlider(arpRateSlider, arpRateLabel, "Arp Rate", 1.0, 20.0, 4.0);
 
   detuneSlider.setTextValueSuffix(" ct");
   pitchBendRangeSlider.setTextValueSuffix(" st");
+  arpRateSlider.setTextValueSuffix(" Hz");
 
   noiseTypeLabel.setText("Noise Type", juce::dontSendNotification);
   noiseTypeLabel.setJustificationType(juce::Justification::centred);
@@ -57,9 +60,27 @@ DrawFormAudioProcessorEditor::DrawFormAudioProcessorEditor(DrawFormAudioProcesso
   frameSelector.addListener(this);
   addAndMakeVisible(frameSelector);
 
+  arpEnabledButton.setButtonText("Arp");
+  arpEnabledButton.onClick = [this]() {
+    audioProcessor.getSynthEngine().setArpeggiatorEnabled(arpEnabledButton.getToggleState());
+  };
+  addAndMakeVisible(arpEnabledButton);
+
+  arpModeLabel.setText("Arp Mode", juce::dontSendNotification);
+  arpModeLabel.setJustificationType(juce::Justification::centred);
+  addAndMakeVisible(arpModeLabel);
+
+  arpModeSelector.addItem("Up", 1);
+  arpModeSelector.addItem("Down", 2);
+  arpModeSelector.addItem("Up/Down", 3);
+  arpModeSelector.addItem("Random", 4);
+  arpModeSelector.setSelectedId(1);
+  arpModeSelector.addListener(this);
+  addAndMakeVisible(arpModeSelector);
+
   updateEnvelope();
 
-  setSize(900, 500);
+  setSize(1000, 550);
 }
 
 DrawFormAudioProcessorEditor::~DrawFormAudioProcessorEditor() {
@@ -80,6 +101,11 @@ void DrawFormAudioProcessorEditor::resized() {
   noiseTypeLabel.setBounds(topArea.removeFromLeft(70));
   noiseTypeSelector.setBounds(topArea.removeFromLeft(100));
 
+  topArea.removeFromLeft(20);
+  arpEnabledButton.setBounds(topArea.removeFromLeft(50));
+  arpModeLabel.setBounds(topArea.removeFromLeft(60));
+  arpModeSelector.setBounds(topArea.removeFromLeft(100));
+
   bounds.removeFromTop(10);
 
   auto waveformArea = bounds.removeFromTop(200);
@@ -87,7 +113,7 @@ void DrawFormAudioProcessorEditor::resized() {
 
   bounds.removeFromTop(20);
 
-  auto sliderWidth = bounds.getWidth() / 9;
+  auto sliderWidth = bounds.getWidth() / 10;
   auto sliderArea = bounds;
 
   auto setupArea = [&](juce::Slider& slider, juce::Label& label) {
@@ -105,6 +131,7 @@ void DrawFormAudioProcessorEditor::resized() {
   setupArea(noiseSlider, noiseLabel);
   setupArea(detuneSlider, detuneLabel);
   setupArea(pitchBendRangeSlider, pitchBendRangeLabel);
+  setupArea(arpRateSlider, arpRateLabel);
 }
 
 void DrawFormAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
@@ -120,6 +147,8 @@ void DrawFormAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
     audioProcessor.getSynthEngine().setDetune(static_cast<float>(detuneSlider.getValue()));
   } else if (slider == &pitchBendRangeSlider) {
     audioProcessor.getSynthEngine().setPitchBendRange(static_cast<float>(pitchBendRangeSlider.getValue()));
+  } else if (slider == &arpRateSlider) {
+    audioProcessor.getSynthEngine().setArpeggiatorRate(static_cast<float>(arpRateSlider.getValue()));
   } else {
     updateEnvelope();
   }
@@ -131,6 +160,9 @@ void DrawFormAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBox) {
   } else if (comboBox == &noiseTypeSelector) {
     auto type = static_cast<NoiseOscillator::NoiseType>(noiseTypeSelector.getSelectedId() - 1);
     audioProcessor.getSynthEngine().setNoiseType(type);
+  } else if (comboBox == &arpModeSelector) {
+    auto mode = static_cast<Arpeggiator::Mode>(arpModeSelector.getSelectedId() - 1);
+    audioProcessor.getSynthEngine().setArpeggiatorMode(mode);
   }
 }
 

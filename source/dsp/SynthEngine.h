@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SynthVoice.h"
+#include "Arpeggiator.h"
 #include <array>
 
 class SynthEngine {
@@ -14,6 +15,9 @@ public:
   }
 
   void setSampleRate(double sampleRate) {
+    this->sampleRate = sampleRate;
+    arpeggiator.setSampleRate(sampleRate);
+
     for (auto& voice : voices) {
       voice.setSampleRate(sampleRate);
     }
@@ -24,46 +28,6 @@ public:
       voice.setEnvelopeParameters(attack, decay, sustain, release);
     }
   }
-
-  void noteOn(int note, float velocity) {
-    // check if not is playing
-    for (auto& voice : voices) {
-      if (voice.getCurrentNote() == note) {
-        voice.noteOn(note, velocity);
-        return;
-      }
-    }
-
-    // find free voice 
-    for (auto& voice : voices) {
-      if (!voice.isPlaying()) {
-        voice.noteOn(note, velocity);
-        return;
-      }
-    }
-
-    // voices busy steal first 
-    voices[0].noteOn(note, velocity);
-  }
-
-  void noteOff(int note) {
-    for (auto& voice : voices) {
-      voice.noteOff(note);
-    }
-  }
-
-  float process() {
-    float output = 0.0f;
-    for (auto& voice : voices) {
-      if (voice.isPlaying()) {
-          output += voice.process();
-      }
-    }
-    return output * 0.25f; // gain staging
-  }
-
-  Wavetable& getWavetable() { return wavetable; }
-
 
   void setFramePosition(float position) {
     for (auto& voice : voices) {
@@ -88,6 +52,7 @@ public:
       voice.setNoiseType(type);
     }
   }
+
   void setPitchBend(float normalizedValue) {
     float semitones = normalizedValue * pitchBendRange;
     for (auto& voice : voices) {
@@ -108,8 +73,79 @@ public:
     }
   }
 
+  void setArpeggiatorEnabled(bool enabled) {
+    arpeggiator.setEnabled(enabled);
+  }
+
+  void setArpeggiatorRate(float rate) {
+    arpeggiator.setRate(rate);
+  }
+
+  void setArpeggiatorMode(Arpeggiator::Mode mode) {
+    arpeggiator.setMode(mode);
+  }
+
+  void noteOn(int note, float velocity) {
+    if (arpeggiator.isEnabled()) {
+        arpeggiator.noteOn(note);
+    } else {
+      triggerNote(note, velocity);
+    }
+  }
+
+  void noteOff(int note) {
+    if (arpeggiator.isEnabled()) {
+      arpeggiator.noteOff(note);
+    } else {
+      releaseNote(note);
+    }
+  }
+
+  float process() {
+    arpeggiator.process(1,
+      [this](int note, float velocity) { triggerNote(note, velocity); },
+      [this](int note) { releaseNote(note); }
+    );
+
+    float output = 0.0f;
+    for (auto& voice : voices) {
+      if (voice.isPlaying()) {
+        output += voice.process();
+      }
+    }
+    return output * 0.25f;
+  }
+
+  Wavetable& getWavetable() { return wavetable; }
+
 private:
+  void triggerNote(int note, float velocity) {
+    for (auto& voice : voices) {
+      if (voice.getCurrentNote() == note) {
+        voice.noteOn(note, velocity);
+        return;
+      }
+    }
+
+    for (auto& voice : voices) {
+      if (!voice.isPlaying()) {
+        voice.noteOn(note, velocity);
+        return;
+      }
+    }
+
+    voices[0].noteOn(note, velocity);
+  }
+
+  void releaseNote(int note) {
+    for (auto& voice : voices) {
+      voice.noteOff(note);
+    }
+  }
+
   Wavetable wavetable;
   std::array<SynthVoice, kMaxVoices> voices;
+  Arpeggiator arpeggiator;
   float pitchBendRange = 2.0f;
+  double sampleRate = 44100.0;
 };
