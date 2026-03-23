@@ -26,7 +26,7 @@ public:
   }
 
   void noteOff() {
-  playing = false;
+    playing = false;
   }
 
   bool isPlaying() const { return playing; }
