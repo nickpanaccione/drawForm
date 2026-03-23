@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WavetableOscillator.h"
+#include "Envelope.h"
 
 class SynthVoice {
 public:
@@ -10,28 +11,50 @@ public:
 
   void setSampleRate(double sampleRate) {
     oscillator.setSampleRate(sampleRate);
+    envelope.setSampleRate(sampleRate);
+  }
+
+  void setEnvelopeParameters(float attack, float decay, float sustain, float release) {
+    envelope.setParameters(attack, decay, sustain, release);
+  }
+
+  void setFramePosition(float position) {
+    oscillator.setFramePosition(position);
   }
 
   void noteOn(int note, float velocity) {
     currentNote = note;
-    oscillator.noteOn(note, velocity);
+    velocityGain = velocity;
+    oscillator.noteOn(note, 1.0f);
+    envelope.noteOn();
   }
 
   void noteOff(int note) {
     if (note == currentNote) {
-      oscillator.noteOff();
-      currentNote = -1;
+      envelope.noteOff();
     }
   }
 
-  bool isPlaying() const { return oscillator.isPlaying(); }
+  bool isPlaying() const { return envelope.isActive(); }
   int getCurrentNote() const { return currentNote; }
 
   float process() {
-    return oscillator.process();
+    if (!envelope.isActive()) {
+      if (oscillator.isPlaying()) {
+        oscillator.noteOff();
+        currentNote = -1;
+      }
+      return 0.0f;
+    }
+
+    float envLevel = envelope.process();
+    float sample = oscillator.process();
+    return sample * envLevel * velocityGain;
   }
 
 private:
   WavetableOscillator oscillator;
+  Envelope envelope;
   int currentNote = -1;
+  float velocityGain = 1.0f;
 };

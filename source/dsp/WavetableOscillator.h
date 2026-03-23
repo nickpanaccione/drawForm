@@ -18,6 +18,10 @@ public:
     updatePhaseIncrement();
   }
 
+  void setFramePosition(float position) {
+    framePosition = juce::jlimit(0.0f, 1.0f, position);
+  }
+
   void noteOn(int midiNote, float velocity) {
     frequency = 440.0f * std::pow(2.0f, (midiNote - 69) / 12.0f);
     gain = velocity;
@@ -37,7 +41,7 @@ public:
     }
 
     float tableIndex = phase * static_cast<float>(Wavetable::kTableSize);
-    float sample = wavetable->getInterpolatedSample(tableIndex);
+    float sample = wavetable->getInterpolatedSample(tableIndex, framePosition);
 
     phase += phaseIncrement;
     if (phase >= 1.0f) {
@@ -65,5 +69,6 @@ private:
   float phase = 0.0f;
   float phaseIncrement = 0.0f;
   float gain = 1.0f;
+  float framePosition = 0.0f;
   bool playing = false;
 };

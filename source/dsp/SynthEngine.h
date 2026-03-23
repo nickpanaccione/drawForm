@@ -19,7 +19,21 @@ public:
     }
   }
 
+  void setEnvelopeParameters(float attack, float decay, float sustain, float release) {
+    for (auto& voice : voices) {
+      voice.setEnvelopeParameters(attack, decay, sustain, release);
+    }
+  }
+
   void noteOn(int note, float velocity) {
+    // check if not is playing
+    for (auto& voice : voices) {
+      if (voice.getCurrentNote() == note) {
+        voice.noteOn(note, velocity);
+        return;
+      }
+    }
+
     // find free voice 
     for (auto& voice : voices) {
       if (!voice.isPlaying()) {
@@ -27,6 +41,7 @@ public:
         return;
       }
     }
+
     // voices busy steal first 
     voices[0].noteOn(note, velocity);
   }
@@ -48,6 +63,13 @@ public:
   }
 
   Wavetable& getWavetable() { return wavetable; }
+
+
+  void setFramePosition(float position) {
+    for (auto& voice : voices) {
+      voice.setFramePosition(position);
+    }
+  }
 
 private:
   Wavetable wavetable;
