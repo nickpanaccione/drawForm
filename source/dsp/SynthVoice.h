@@ -77,7 +77,7 @@ public:
     float sample = oscillator.process();
     float noiseSample = noiseOsc.process();
 
-    return (oscSample + noiseSample) * envLevel * velocityGain;
+    return (sample + noiseSample) * envLevel * velocityGain;
   }
 
 private:

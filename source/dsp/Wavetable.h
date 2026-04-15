@@ -1,8 +1,10 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "WavetableFrame.h"
 #include <array>
 #include <cmath>
+#include <vector>
 
 class Wavetable {
 public:
